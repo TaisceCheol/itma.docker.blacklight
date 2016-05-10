@@ -2,7 +2,6 @@
   <% document_show_fields(document).each do |field_name, field| -%>
     <% if should_render_show_field? document, field %>
         <% if field_name == "digital_objects" %>
-          <hr>
           <div class="panel panel-default">
           <div class="panel-heading"><%= render_document_show_field_label document, field: field_name %></div>
           <div class="panel-body">
@@ -11,7 +10,7 @@
                  <% if value =~ /.*(?:wav|mp3|aiff)$/ %>
                   <li>
                       <audio id="audio" preload="false" controls="controls" src="<%= value -%>"></audio>
-                      <span class="pull-right"><%= value.split('/')[-1].sub('%20',' ') -%></span>
+                      <span ><%= value.split('/')[-1].sub('%20',' ') -%></span>
                       <br>
                   </li>
                 <% end %>

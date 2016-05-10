@@ -120,7 +120,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'published_display', label: 'Published'
     config.add_show_field 'published_vern_display', label: 'Published'
     config.add_show_field 'isbn_t', label: 'ISBN'
-    config.add_show_field 'physical_description_t', label: 'Physical Description'
+    config.add_show_field 'physical_description_s', label: 'Physical Description'
     config.add_show_field 'copyright_t', label: 'Copyright'
     config.add_show_field 'contents_t', label: 'Contents'
 
