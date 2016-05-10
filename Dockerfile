@@ -26,8 +26,18 @@ RUN gem install rails
 WORKDIR /opt
 
 RUN rails new search_app -m https://raw.github.com/projectblacklight/blacklight/master/template.demo.rb
+
 WORKDIR /opt/search_app
+
+COPY ./src/controllers/ app/controllers/
+
+COPY ./src/views/ app/views/catalog/
+COPY ./src/views/shared app/views/shared/
+COPY ./src/sass/blacklight.scss app/assets/stylesheets/
+COPY ./src/images/ app/assets/images/
+COPY ./src/config/ config/locales/
 
 ENV SOLR_URL "http://solr:8983/solr/blacklight"
 
 CMD bundle exec rails s -p 3000 -b '0.0.0.0'
+
