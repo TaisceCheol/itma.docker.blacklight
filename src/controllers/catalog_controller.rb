@@ -99,8 +99,9 @@ class CatalogController < ApplicationController
     config.add_index_field 'title_vern_display', label: 'Title'
     config.add_index_field 'collection_display', label: 'Collection'    
     config.add_index_field 'pub_date_display', label: 'Published'    
-    config.add_index_field 'author_display', label: 'Creator'
+    config.add_index_field 'author_display', label: 'Creator', link_to_search:"people_facet"
     config.add_index_field 'author_vern_display', label: 'Creator'
+    config.add_index_field 'material_t', label: 'Material Type'
     config.add_index_field 'format', label: 'Format'
     # config.add_index_field 'pub_date_display', label: 'Published'
     config.add_index_field 'published_vern_display', label: 'Published'
@@ -114,10 +115,10 @@ class CatalogController < ApplicationController
     config.add_show_field 'collection_display', label: 'Collection'
     config.add_show_field 'subtitle_display', label: 'Subtitle'
     config.add_show_field 'subtitle_vern_display', label: 'Subtitle'
-    config.add_show_field 'author_display', label: 'Creator'
+    config.add_show_field 'author_display', label: 'Creator',link_to_search: "people_facet"
     config.add_show_field 'author_vern_display', label: 'Creator'
     config.add_show_field 'format', label: 'Format'
-    config.add_show_field 'material_facet', label: 'Material Type'
+    config.add_show_field 'material_t', label: 'Material Type'
     config.add_show_field 'url_fulltext_display', label: 'URL'
     config.add_show_field 'url_suppl_display', label: 'More Information'
     config.add_show_field 'language_facet', label: 'Language'
@@ -126,7 +127,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'isbn_t', label: 'ISBN'
     config.add_show_field 'physical_description_s', label: 'Physical Description'
     config.add_show_field 'copyright_t', label: 'Copyright'
-    config.add_show_field 'contents_txt', label: 'Contents'
+    config.add_show_field 'contents_t', label: 'Contents',link_to_search: "contents_facet"
     config.add_show_field 'abstract_txt', label: 'Abstract'
 
     # "fielded" search configuration. Used by pulldown among other places.
