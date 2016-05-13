@@ -70,23 +70,22 @@ class CatalogController < ApplicationController
     # :index_range can be an array or range of prefixes that will be used to create the navigation (note: It is case sensitive when searching values)
 
     config.add_facet_field 'format', label: 'Format'
-    config.add_facet_field 'pub_date', label: 'Publication Year', single: true
+    # config.add_facet_field 'pub_date', label: 'Publication Year', single: true
+    config.add_facet_field 'pub_date_sort', label: 'Publication Year', range: true 
     config.add_facet_field 'collection_facet', label: 'Collection', limit: true
     config.add_facet_field 'material_facet', label: 'Material Type'
     config.add_facet_field 'language_facet', label: 'Language', limit: true
-
     config.add_facet_field 'subject_geo_facet', label: 'Region',limit: 25
     config.add_facet_field 'subject_era_facet', label: 'Era',limit: 25
     config.add_facet_field 'subject_topic_facet', label: 'Topic', limit: 20, index_range: 'A'..'Z'
 
     # config.add_facet_field 'example_pivot_field', label: 'Pivot Field', :pivot => ['format', 'language_facet']
 
-    # config.add_facet_field 'example_query_facet_field', label: 'Publish Date', :query => {
-    #    :years_5 => { label: 'within 5 Years', fq: "pub_date:[#{Time.zone.now.year - 5 } TO *]" },
-    #    :years_10 => { label: 'within 10 Years', fq: "pub_date:[#{Time.zone.now.year - 10 } TO *]" },
-    #    :years_25 => { label: 'within 25 Years', fq: "pub_date:[#{Time.zone.now.year - 25 } TO *]" }
-    # }
-
+    config.add_facet_field 'example_query_facet_field', label: 'Publish Date', :query => {
+       :years_5 => { label: 'within 5 Years', fq: "pub_date:[#{Time.zone.now.year - 5 } TO *]" },
+       :years_10 => { label: 'within 10 Years', fq: "pub_date:[#{Time.zone.now.year - 10 } TO *]" },
+       :years_25 => { label: 'within 25 Years', fq: "pub_date:[#{Time.zone.now.year - 25 } TO *]" }
+    }
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -100,13 +99,8 @@ class CatalogController < ApplicationController
     config.add_index_field 'collection_display', label: 'Collection'    
     config.add_index_field 'pub_date_display', label: 'Published'    
     config.add_index_field 'author_display', label: 'Creator', link_to_search:"people_facet"
-    config.add_index_field 'author_vern_display', label: 'Creator'
     config.add_index_field 'material_t', label: 'Material Type'
     config.add_index_field 'format', label: 'Format'
-    # config.add_index_field 'pub_date_display', label: 'Published'
-    config.add_index_field 'published_vern_display', label: 'Published'
-    config.add_index_field 'lc_callnum_display', label: 'Call number'
-    config.add_index_field 'material_facet', label: 'Material Type'
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
@@ -123,12 +117,11 @@ class CatalogController < ApplicationController
     config.add_show_field 'url_suppl_display', label: 'More Information'
     config.add_show_field 'language_facet', label: 'Language'
     config.add_show_field 'pub_date_display', label: 'Published'
-    # config.add_show_field 'published_vern_display', label: 'Published'
     config.add_show_field 'isbn_t', label: 'ISBN'
     config.add_show_field 'physical_description_s', label: 'Physical Description'
-    config.add_show_field 'copyright_t', label: 'Copyright'
     config.add_show_field 'contents_t', label: 'Contents',link_to_search: "contents_facet"
     config.add_show_field 'abstract_txt', label: 'Abstract'
+    config.add_show_field 'copyright_t', label: 'Copyright'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -169,7 +162,7 @@ class CatalogController < ApplicationController
       }
     end
 
-    config.add_search_field('author') do |field|
+    config.add_search_field('creator') do |field|
       field.solr_parameters = { :'spellcheck.dictionary' => 'author' }
       field.solr_local_parameters = {
         qf: '$author_qf',
@@ -194,7 +187,9 @@ class CatalogController < ApplicationController
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
     config.add_sort_field 'score desc, pub_date_sort desc, title_sort asc', label: 'relevance'
-    config.add_sort_field 'pub_date_sort desc, title_sort asc', label: 'year'
+    config.add_sort_field 'pub_date_sort desc, title_sort asc', label: 'year desc'
+    config.add_sort_field 'pub_date_sort asc, title_sort asc', label: 'year asc'
+
     config.add_sort_field 'author_sort asc, title_sort asc', label: 'author'
     config.add_sort_field 'title_sort asc, pub_date_sort desc', label: 'title'
 
