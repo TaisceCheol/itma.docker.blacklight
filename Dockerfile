@@ -36,7 +36,6 @@ ADD Gemfile.lock /opt/blacklight_app/Gemfile.lock
 RUN bundle install 
 
 RUN rails generate blacklight:install
-RUN rails generate blacklight_range_limit:install
 
 # RUN rake "db:migrate"
 
@@ -46,6 +45,8 @@ COPY ./src/views/shared app/views/shared/
 COPY ./src/sass/blacklight.scss app/assets/stylesheets/
 COPY ./src/images/ app/assets/images/
 COPY ./src/config/ config/
+
+RUN rails generate blacklight_range_limit:install
 
 ENV SOLR_URL "http://solr:8983/solr/blacklight"
 
