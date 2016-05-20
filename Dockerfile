@@ -44,6 +44,8 @@ COPY ./src/views/ app/views/catalog/
 COPY ./src/views/shared app/views/shared/
 COPY ./src/sass/blacklight.scss app/assets/stylesheets/
 COPY ./src/images/ app/assets/images/
+COPY ./src/js/ app/assets/javascripts/
+
 COPY ./src/config/ config/
 
 RUN rails generate blacklight_range_limit:install

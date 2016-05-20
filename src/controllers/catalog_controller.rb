@@ -39,7 +39,10 @@ class CatalogController < ApplicationController
 
     # solr field configuration for search results/index views
     config.index.title_field = 'title_display'
+    config.index.partials = [:index_header, :thumbnail, :index]
     config.index.display_type_field = 'format'
+    config.index.group = false
+
 
     # solr field configuration for document/show views
     #config.show.title_field = 'title_display'
@@ -70,17 +73,16 @@ class CatalogController < ApplicationController
     # :index_range can be an array or range of prefixes that will be used to create the navigation (note: It is case sensitive when searching values)
 
     config.add_facet_field 'format', label: 'Format'
-    # config.add_facet_field 'pub_date', label: 'Publication Year', single: true
     config.add_facet_field 'pub_date_sort', label: 'Publication Year', range: true 
     config.add_facet_field 'collection_facet', label: 'Collection', limit: true
     config.add_facet_field 'material_facet', label: 'Material Type'
+    config.add_facet_field 'digitized_facet', label: 'Digitized'
     config.add_facet_field 'language_facet', label: 'Language', limit: true
     config.add_facet_field 'subject_geo_facet', label: 'Region',limit: 25
-    config.add_facet_field 'subject_era_facet', label: 'Era',limit: 25
+    # config.add_facet_field 'subject_era_facet', label: 'Era',limit: 25
     config.add_facet_field 'subject_topic_facet', label: 'Topic', limit: 20, index_range: 'A'..'Z'
 
     # config.add_facet_field 'example_pivot_field', label: 'Pivot Field', :pivot => ['format', 'language_facet']
-
     config.add_facet_field 'example_query_facet_field', label: 'Publish Date', :query => {
        :years_5 => { label: 'within 5 Years', fq: "pub_date:[#{Time.zone.now.year - 5 } TO *]" },
        :years_10 => { label: 'within 10 Years', fq: "pub_date:[#{Time.zone.now.year - 10 } TO *]" },
@@ -94,34 +96,33 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
-    config.add_index_field 'title_display', label: 'Title'
-    config.add_index_field 'title_vern_display', label: 'Title'
-    config.add_index_field 'collection_display', label: 'Collection'    
-    config.add_index_field 'pub_date_display', label: 'Published'    
-    config.add_index_field 'author_display', label: 'Creator', link_to_search:"people_facet"
-    config.add_index_field 'material_t', label: 'Material Type'
-    config.add_index_field 'format', label: 'Format'
+    config.add_index_field 'title_display', :label => 'Title'
+    config.add_index_field 'collection_display', :label => 'Collection'
+    config.add_index_field 'material_display', :label => 'Material Type'
+    config.add_index_field 'pub_date_display', :label => 'Published'    
+    config.add_index_field 'author_display', :label => 'Author/Creator'
+    config.add_index_field 'archive_location_display', :label => 'Location'
+    # config.add_index_field 'people_display', :label => 'People',:separator => ' ; ',link_to_search: "people_facet"
+    # , label: 'People', link_to_search:"people_facet"
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
     config.add_show_field 'title_display', label: 'Title'
-    config.add_show_field 'title_vern_display', label: 'Title'
     config.add_show_field 'collection_display', label: 'Collection'
+    config.add_show_field 'itma_reference_display', label: 'ITMA Reference'
     config.add_show_field 'subtitle_display', label: 'Subtitle'
-    config.add_show_field 'subtitle_vern_display', label: 'Subtitle'
-    config.add_show_field 'author_display', label: 'Creator',link_to_search: "people_facet"
-    config.add_show_field 'author_vern_display', label: 'Creator'
+    config.add_show_field 'archive_location_display', :label => 'Location'    
+    config.add_show_field 'people_display', label: 'People',separator: ' -- ',link_to_search: "people_facet"
     config.add_show_field 'format', label: 'Format'
     config.add_show_field 'material_t', label: 'Material Type'
-    config.add_show_field 'url_fulltext_display', label: 'URL'
-    config.add_show_field 'url_suppl_display', label: 'More Information'
     config.add_show_field 'language_facet', label: 'Language'
     config.add_show_field 'pub_date_display', label: 'Published'
-    config.add_show_field 'isbn_t', label: 'ISBN'
     config.add_show_field 'physical_description_s', label: 'Physical Description'
-    config.add_show_field 'contents_t', label: 'Contents',link_to_search: "contents_facet"
+    config.add_show_field 'contents_t', label: 'Contents', separator: ' -- ', link_to_search: "contents_facet"
     config.add_show_field 'abstract_txt', label: 'Abstract'
-    config.add_show_field 'copyright_t', label: 'Copyright'
+    config.add_show_field 'object_url_display', label: 'URL'
+
+    # config.add_show_field 'copyright_t', label: 'Copyright'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -187,9 +188,8 @@ class CatalogController < ApplicationController
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
     config.add_sort_field 'score desc, pub_date_sort desc, title_sort asc', label: 'relevance'
-    config.add_sort_field 'pub_date_sort desc, title_sort asc', label: 'year desc'
-    config.add_sort_field 'pub_date_sort asc, title_sort asc', label: 'year asc'
-
+    config.add_sort_field 'pub_date_sort asc, title_sort asc', label: 'year-asc'
+    config.add_sort_field 'pub_date_sort desc, title_sort asc', label: 'year-desc'
     config.add_sort_field 'author_sort asc, title_sort asc', label: 'author'
     config.add_sort_field 'title_sort asc, pub_date_sort desc', label: 'title'
 
