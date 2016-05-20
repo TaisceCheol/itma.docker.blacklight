@@ -1,0 +1,43 @@
+<script src="jwplayer/jwplayer.js" type="text/javascript"></script>
+<script type="text/javascript">jwplayer.key="xpxtWPl2LMu9RkA0iU6v3Q3OXVOUOdiovOpbWg==";</script>
+
+<dl class="dl-horizontal  dl-invert">
+  <% document_show_fields(document).each do |field_name, field| -%>
+    <% if should_render_show_field? document, field %>
+        <% if field_name == "object_url_display" %>
+              <% @document['object_url_display'].sort.each do |value| %>
+                 <% if value =~ /.*(?:mp4)$/ %>
+                  <hr>
+                  <dd>
+                    <div id="video"></div>
+                  </dd>
+                  <script type='text/javascript'>
+                      jwplayer('video').setup({
+                          file: '<%= value -%>',
+                          width: '100%',
+                          aspectratio: '16:9'
+                      });
+                  </script>
+                <% end %>
+              <% end %>
+          </dd>
+        <% elsif field_name == "contents" %>
+            <dt class="blacklight-<%= field_name.parameterize %>"><%= render_document_show_field_label document, field: field_name %></dt>
+            <br/>
+            <dd class="blacklight-<%= field_name.parameterize %>">
+              <ol >
+                <% @document['contents'].each do |value| %>
+                  <li>
+                      <p><%= value -%></p>
+                  </li>
+                <% end %>
+              </ol >
+            </dd>    
+        <% else %>
+            <dt class="blacklight-<%= field_name.parameterize %>"><%= render_document_show_field_label document, field: field_name %></dt>
+            <dd class="blacklight-<%= field_name.parameterize %>"><%= render_document_show_field_value document, field: field_name %></dd>  
+        <% end -%>
+    <% end -%>
+  <% end -%>
+</dl>
+
