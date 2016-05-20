@@ -101,7 +101,7 @@ class CatalogController < ApplicationController
     config.add_index_field 'material_display', :label => 'Material Type'
     config.add_index_field 'pub_date_display', :label => 'Published'    
     config.add_index_field 'author_display', :label => 'Author/Creator'
-    config.add_index_field 'archive_location_display', :label => 'Location'
+    config.add_index_field 'archive_location_display', :label => 'Archive Location', :separator => ' -- '
     # config.add_index_field 'people_display', :label => 'People',:separator => ' ; ',link_to_search: "people_facet"
     # , label: 'People', link_to_search:"people_facet"
 
@@ -111,7 +111,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'collection_display', label: 'Collection'
     config.add_show_field 'itma_reference_display', label: 'ITMA Reference'
     config.add_show_field 'subtitle_display', label: 'Subtitle'
-    config.add_show_field 'archive_location_display', :label => 'Location'    
+    config.add_show_field 'archive_location_display', :label => 'Archive Location'    
     config.add_show_field 'people_display', label: 'People',separator: ' -- ',link_to_search: "people_facet"
     config.add_show_field 'format', label: 'Format'
     config.add_show_field 'material_t', label: 'Material Type'
