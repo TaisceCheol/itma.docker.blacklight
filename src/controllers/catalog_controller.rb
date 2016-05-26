@@ -17,7 +17,18 @@ class CatalogController < ApplicationController
 
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
-      rows: 10
+      :qt => "search",
+      :rows => 10,
+      ("hl.fl").to_sym => "title_t, contents_t",
+      ("f.title_t.hl.alternativeField").to_sym => "title_t'",
+      ("f.contents_t.hl.alternativeField") => "contents_t'",
+      ("hl.simple.pre").to_sym => '<span class="highlight">',
+      ("hl.simple.post").to_sym => "</span>",
+      :hl => true
+    }
+
+    config.default_document_solr_params = {
+
     }
 
     # solr path which will be added to solr base url before the other solr params.
@@ -29,13 +40,13 @@ class CatalogController < ApplicationController
     ## Default parameters to send on single-document requests to Solr. These settings are the Blackligt defaults (see SearchHelper#solr_doc_params) or
     ## parameters included in the Blacklight-jetty document requestHandler.
     #
-    #config.default_document_solr_params = {
+    # config.default_document_solr_params = {
     #  qt: 'document',
     #  ## These are hard-coded in the blacklight 'document' requestHandler
     #  # fl: '*',
     #  # rows: 1
     #  # q: '{!term f=id v=$id}'
-    #}
+    # }
 
     # solr field configuration for search results/index views
     config.index.title_field = 'title_display'
@@ -96,7 +107,8 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
-    config.add_index_field 'title_display', :label => 'Title'
+    config.add_index_field 'title_t', :label => 'Title',
+                                            :highlight => true
     config.add_index_field 'collection_display', :label => 'Collection'
     config.add_index_field 'material_display', :label => 'Material Type'
     config.add_index_field 'pub_date_display', :label => 'Published'    
@@ -107,19 +119,21 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field 'title_display', label: 'Title'
+    config.add_show_field 'title_display',  :label => 'Title' 
     config.add_show_field 'collection_display', label: 'Collection'
     config.add_show_field 'itma_reference_display', label: 'ITMA Reference'
     config.add_show_field 'subtitle_display', label: 'Subtitle'
     config.add_show_field 'archive_location_display', :label => 'Archive Location'    
-    config.add_show_field 'people_display', label: 'People',separator: ' -- ',link_to_search: "people_facet"
+    config.add_show_field 'people_display', label: 'People', separator: ' -- '
+    # ,link_to_search: "people_facet"
     config.add_show_field 'format', label: 'Format'
     config.add_show_field 'material_t', label: 'Material Type'
     config.add_show_field 'language_facet', label: 'Language'
     config.add_show_field 'pub_date_display', label: 'Published'
     config.add_show_field 'physical_description_s', label: 'Physical Description'
-    config.add_show_field 'contents_t', label: 'Contents', separator: ' -- ', link_to_search: "contents_facet"
-    config.add_show_field 'abstract_txt', label: 'Abstract'
+    config.add_show_field 'contents_t', :label => 'Contents'
+     
+    # config.add_show_field 'abstract_txt', label: 'Abstract'
     config.add_show_field 'object_url_display', label: 'URL'
 
     # config.add_show_field 'copyright_t', label: 'Copyright'
@@ -148,7 +162,6 @@ class CatalogController < ApplicationController
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
     # of Solr search fields.
-
     config.add_search_field('title') do |field|
       # solr_parameters hash are sent to Solr as ordinary url query params.
       field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
@@ -183,6 +196,14 @@ class CatalogController < ApplicationController
       }
     end
 
+    config.add_search_field('contents') do |field|
+      field.solr_parameters = { :'spellcheck.dictionary' => 'default' }
+      field.solr_local_parameters = {
+        qf: '$contents_qf',
+        pf: '$contents_pf'
+      }
+    end    
+
     # "sort results by" select (pulldown)
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
@@ -195,7 +216,7 @@ class CatalogController < ApplicationController
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
-    config.spell_max = 5
+    config.spell_max = 10
 
     # Configuration for autocomplete suggestor
     config.autocomplete_enabled = true

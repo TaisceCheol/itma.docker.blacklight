@@ -23,11 +23,9 @@ RUN gem install bundler
 RUN gem install rails
 RUN bundle config --global silence_root_warning 1
 
-# RUN rails new blacklight_app -m https://raw.github.com/projectblacklight/blacklight/master/template.demo.rb
-
 WORKDIR /opt/
 
-RUN rails new blacklight_app
+RUN rails new blacklight_app -d postgresql
 
 WORKDIR /opt/blacklight_app
 
@@ -35,8 +33,7 @@ ADD Gemfile /opt/blacklight_app/Gemfile
 ADD Gemfile.lock /opt/blacklight_app/Gemfile.lock
 RUN bundle install 
 
-RUN rails generate blacklight:install
-
+RUN rails generate blacklight:install --devise
 # RUN rake "db:migrate"
 
 COPY ./src/controllers/ app/controllers/
