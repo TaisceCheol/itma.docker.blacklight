@@ -19,9 +19,8 @@ class CatalogController < ApplicationController
     config.default_solr_params = {
       :qt => "search",
       :rows => 10,
-      ("hl.fl").to_sym => "title_t, contents_t",
+      ("hl.fl").to_sym => "title_t",
       ("f.title_t.hl.alternativeField").to_sym => "title_t'",
-      ("f.contents_t.hl.alternativeField") => "contents_t'",
       ("hl.simple.pre").to_sym => '<span class="highlight">',
       ("hl.simple.post").to_sym => "</span>",
       :hl => true
